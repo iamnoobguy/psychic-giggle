@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""Poem generator with mood and length options."""
+from __future__ import annotations
+
+import random
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class LengthOption:
+    name: str
+    lines: int
+
+
+LENGTH_OPTIONS = [
+    LengthOption("short", 8),
+    LengthOption("medium", 16),
+    LengthOption("long", 24),
+    LengthOption("very long", 36),
+]
+
+MOOD_PALETTES = {
+    "sad": {
+        "images": ["rain", "dusk", "echo", "shadow", "slow river", "quiet street"],
+        "verbs": ["lingers", "weeps", "softens", "falls", "waits", "drifts"],
+        "adjectives": ["blue", "lonely", "dim", "tender", "tired", "distant"],
+        "closing": [
+            "and the night holds its breath",
+            "while the stars learn to forgive",
+            "and the horizon hums a hush",
+        ],
+    },
+    "romantic": {
+        "images": ["rose", "candle", "harbor", "moonlight", "silk", "warm breeze"],
+        "verbs": ["glows", "sways", "promises", "blossoms", "dances", "whispers"],
+        "adjectives": ["golden", "soft", "radiant", "sweet", "gentle", "endless"],
+        "closing": [
+            "and every heartbeat finds your name",
+            "where our laughter is a vow",
+            "as love keeps the shore in sight",
+        ],
+    },
+    "feel good": {
+        "images": ["sunrise", "trail", "spark", "kettle", "laughter", "kites"],
+        "verbs": ["rises", "celebrates", "spins", "cheers", "shines", "opens"],
+        "adjectives": ["bright", "warm", "bold", "clear", "brave", "easy"],
+        "closing": [
+            "and tomorrow waves hello",
+            "with a grin as wide as morning",
+            "and the day says yes again",
+        ],
+    },
+    "mysterious": {
+        "images": ["mist", "lantern", "map", "threshold", "owl", "clock"],
+        "verbs": ["beckons", "hides", "circles", "shifts", "waits", "listens"],
+        "adjectives": ["secret", "silver", "ancient", "hollow", "cryptic", "veiled"],
+        "closing": [
+            "and the path folds into myth",
+            "while the key remembers you",
+            "as midnight keeps the riddle",
+        ],
+    },
+}
+
+
+def prompt_choice(prompt: str, choices: list[str]) -> str:
+    print(prompt)
+    for index, choice in enumerate(choices, start=1):
+        print(f"  {index}. {choice}")
+
+    while True:
+        selection = input("Choose an option: ").strip()
+        if selection.isdigit():
+            idx = int(selection)
+            if 1 <= idx <= len(choices):
+                return choices[idx - 1]
+        if selection.lower() in choices:
+            return selection.lower()
+        print("Please enter the number or the exact option name.")
+
+
+def build_line(palette: dict[str, list[str]]) -> str:
+    image = random.choice(palette["images"])
+    verb = random.choice(palette["verbs"])
+    adjective = random.choice(palette["adjectives"])
+    starters = [
+        f"The {adjective} {image} {verb}",
+        f"A {image} {verb} in {adjective} light",
+        f"Your {adjective} {image} {verb} softly",
+        f"This {adjective} {image} {verb} like a promise",
+    ]
+    return random.choice(starters)
+
+
+def generate_poem(length: LengthOption, mood: str) -> str:
+    palette = MOOD_PALETTES[mood]
+    lines = []
+    for line_number in range(1, length.lines + 1):
+        if line_number % 6 == 0:
+            lines.append(random.choice(palette["closing"]))
+        else:
+            lines.append(build_line(palette))
+    return "\n".join(lines)
+
+
+def main() -> None:
+    print("\nWelcome to the Best-Ever Poem Generator!\n")
+    length_choice = prompt_choice(
+        "Pick a length:",
+        [option.name for option in LENGTH_OPTIONS],
+    )
+    mood_choice = prompt_choice(
+        "Pick a mood:",
+        list(MOOD_PALETTES.keys()),
+    )
+
+    length_option = next(option for option in LENGTH_OPTIONS if option.name == length_choice)
+    poem = generate_poem(length_option, mood_choice)
+
+    print("\nHere is your poem:\n")
+    print(poem)
+    print("\nThanks for creating something beautiful today!\n")
+
+
+if __name__ == "__main__":
+    main()
