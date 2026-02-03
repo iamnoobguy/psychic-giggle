@@ -14,11 +14,7 @@ A simple command-line poem generator that creates mood-based poems at different 
 
 ## Usage
 
-Run the script from the repository root:
-
-```bash
-python3 "Poem Generator"
-```
+Run the script after cloning it in your terminal.
 
 Follow the prompts to pick a length and mood. The poem will be printed to the terminal.
 
